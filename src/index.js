@@ -50,17 +50,60 @@ io.on('connect_error', (error) => {
     console.log(`[SOCKET.IO] Server connection error:`, error);
 });
 
+// Core middleware
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// DB initialization state
+let isDbInitialized = false;
+let initPromise = null;
+
+const initializeApp = async () => {
+    if (isDbInitialized) return;
+    if (initPromise) return initPromise;
+
+    initPromise = (async () => {
+        try {
+            const isDbConnected = await connectDB();
+            if (isDbConnected) {
+                await sequelize.sync({ force: false });
+                console.log('[Database] Synchronized successfully.');
+                isDbInitialized = true;
+            } else {
+                throw new Error('Database connection failed');
+            }
+        } catch (error) {
+            throw error;
+        }
+    })();
+
+    await initPromise;
+};
+
+// For Vercel: init DB on first request before routing
+if (process.env.VERCEL) {
+    app.use(async (req, res, next) => {
+        try {
+            await initializeApp();
+            next();
+        } catch (error) {
+            console.error('[Vercel Init] Error:', error.message);
+            res.status(500).json({ error: 'Database initialization failed' });
+        }
+    });
+}
+
+// Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/devices', deviceRoutes);
 app.use('/api/tracking', trackingRoutes);
 app.use('/api/telemetry', telemetryRoutes);
+
 app.get('/', (req, res) => {
     res.status(200).json({ message: 'GNSS backend is running.' });
 });
+
 app.use((req, res) => {
     res.status(404).json({ message: 'Endpoint not found' });
 });
