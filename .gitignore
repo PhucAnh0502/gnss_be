@@ -1,0 +1,35 @@
+# Node
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+package-lock.json
+yarn.lock
+.pnpm-debug.log
+
+# Build output
+dist/
+build/
+coverage/
+
+# Environment
+.env
+.env.local
+
+# Editor/OS
+.DS_Store
+.vscode/
+.idea/
+
+# Logs
+logs/
+*.log
+
+# Misc
+*.tgz
+.cache/
+
+# Ignore local files
+/local.env
+
