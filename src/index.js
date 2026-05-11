@@ -58,6 +58,9 @@ app.use('/api/auth', authRoutes);
 app.use('/api/devices', deviceRoutes);
 app.use('/api/tracking', trackingRoutes);
 app.use('/api/telemetry', telemetryRoutes);
+app.get('/', (req, res) => {
+    res.status(200).json({ message: 'GNSS backend is running.' });
+});
 app.use((req, res) => {
     res.status(404).json({ message: 'Endpoint not found' });
 });
@@ -84,4 +87,8 @@ const startServer = async () => {
     }
 };
 
-startServer();
+if (!process.env.VERCEL) {
+    startServer();
+}
+
+export default app;
