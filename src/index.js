@@ -8,6 +8,7 @@ import { connectMqttClient } from './configs/mqtt.js';
 import authRoutes from './routes/authRoutes.js';
 import deviceRoutes from './routes/deviceRoutes.js';
 import trackingRoutes from './routes/trackingRoutes.js';
+import snapshotRoutes from './routes/snapshotRoutes.js';
 import telemetryRoutes from './routes/telemetryRoutes.js';
 import { connect } from 'http2';
 
@@ -98,6 +99,7 @@ if (process.env.VERCEL) {
 app.use('/api/auth', authRoutes);
 app.use('/api/devices', deviceRoutes);
 app.use('/api/tracking', trackingRoutes);
+app.use('/api/snapshots', snapshotRoutes);
 app.use('/api/telemetry', telemetryRoutes);
 
 app.get('/', (req, res) => {

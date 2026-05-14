@@ -108,7 +108,8 @@ export const updateExistingDevice = async (id, userId, updateData) => {
     if (!device) {
         throw new ServiceError("Device not found", 404);
     }
-    await device.update(updateData);
+    const { status, ...safeUpdateData } = updateData || {};
+    await device.update(safeUpdateData);
     const data = device.toJSON();
     return {
         message: "Device updated successfully",

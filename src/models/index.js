@@ -2,6 +2,7 @@ import User from './User.js';
 import Device from './Device.js';
 import Tracking from './Tracking.js';
 import RawGnss from './RawGnss.js';
+import TrackingSnapshot from './TrackingSnapshot.js';
 
 // User - Device : 1 - N
 User.hasMany(Device, { foreignKey: 'userId', as: 'devices', onDelete: 'CASCADE' });
@@ -15,4 +16,12 @@ Tracking.belongsTo(Device, { foreignKey: 'deviceId', as: 'device' });
 Tracking.hasOne(RawGnss, { foreignKey: 'trackingId', as: 'rawGnss', onDelete: 'CASCADE' });
 RawGnss.belongsTo(Tracking, { foreignKey: 'trackingId', as: 'tracking' });
 
-export { User, Device, Tracking, RawGnss };
+// Device - TrackingSnapshot : 1 - N
+Device.hasMany(TrackingSnapshot, { foreignKey: 'deviceId', as: 'snapshots', onDelete: 'CASCADE' });
+TrackingSnapshot.belongsTo(Device, { foreignKey: 'deviceId', as: 'device' });
+
+// Tracking - TrackingSnapshot : 1 - N
+Tracking.hasMany(TrackingSnapshot, { foreignKey: 'trackingId', as: 'snapshots', onDelete: 'SET NULL' });
+TrackingSnapshot.belongsTo(Tracking, { foreignKey: 'trackingId', as: 'tracking' });
+
+export { User, Device, Tracking, RawGnss, TrackingSnapshot };
