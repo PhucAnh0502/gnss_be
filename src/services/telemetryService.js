@@ -116,25 +116,32 @@ export const processTelemetry = async (payload) => {
 //Get raw data by tracking ID
 export const getRawDataByTrackingId = async (trackingId, userId, isAdmin) => {
     try {
+        // Quick ownership check first (simple query)
+        if (!isAdmin) {
+            const tracking = await Tracking.findOne({
+                where: { id: trackingId },
+                attributes: ['deviceId'],
+            });
+            if (!tracking) {
+                throw new ServiceError("Tracking point not found", 404);
+            }
+            const device = await Device.findOne({
+                where: { id: tracking.deviceId },
+                attributes: ['userId'],
+            });
+            if (!device || device.userId !== userId) {
+                throw new ServiceError("Access denied", 403);
+            }
+        }
+
+        // Fetch raw data (simple, no joins)
         const data = await RawGnss.findOne({
             where: { trackingId },
-            include: [{
-                model: Tracking,
-                as: 'tracking',
-                include: [{
-                    model: Device,
-                    as: 'device',
-                    attributes: ['userId']
-                }]
-            }]
+            attributes: ['id', 'trackingId', 'statusRaw', 'measurementsRaw', 'clockRaw', 'createdAt'],
         });
 
         if (!data) {
             throw new ServiceError("Raw data not found for the given tracking ID", 404);
-        }
-
-        if(!isAdmin && data.tracking.device.userId !== userId) {
-            throw new ServiceError("Access denied", 403);
         }
 
         return { success: true, data: data.toJSON() };
