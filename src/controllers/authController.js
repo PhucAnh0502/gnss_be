@@ -7,6 +7,7 @@ import {
     changeUserPassword,
     ServiceError,
 } from "../services/authService.js";
+import User from "../models/User.js";
 
 const handleControllerError = (error, res, context) => {
     console.error(`${context} error:`, error);
@@ -96,3 +97,22 @@ export const verifyResetOtp = async (req, res) => {
         return handleControllerError(error, res, "Verify Reset OTP");
     }
 }
+
+
+// Get current user profile
+export const getMe = async (req, res) => {
+    try {
+        const user = await User.findByPk(req.user.id, {
+            attributes: ['id', 'username', 'email', 'role', 'createdAt'],
+        });
+
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        return res.status(200).json({ data: user });
+    } catch (error) {
+        console.error('GetMe error:', error);
+        return res.status(500).json({ message: 'Internal server error' });
+    }
+};
