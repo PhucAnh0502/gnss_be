@@ -94,7 +94,13 @@ const resolveUploadPath = (deviceId, snapshotId, mimeType) => {
 };
 
 const findDeviceForUser = async (deviceId, userId) => {
-    const device = await Device.findOne({ where: { id: deviceId, userId } });
+    // Support both UUID and deviceCode lookup
+    const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(deviceId);
+    const where = isUuid
+        ? { id: deviceId, userId }
+        : { deviceCode: deviceId, userId };
+
+    const device = await Device.findOne({ where });
     if (!device) {
         throw new ServiceError('Device not found', 404);
     }
