@@ -39,17 +39,3 @@ export const getDeviceSnapshots = async (req, res) => {
         return handleControllerError(error, res, 'Get Device Snapshots');
     }
 };
-
-export const attachToTracking = async (req, res) => {
-    try {
-        const { snapshotId, trackingId } = req.body;
-        if (!snapshotId || !trackingId) {
-            return res.status(400).json({ message: 'Missing snapshotId or trackingId' });
-        }
-
-        const snapshot = await snapshotService.attachSnapshotToTracking(snapshotId, trackingId, req.user.id);
-        return res.status(200).json({ success: true, data: snapshot });
-    } catch (error) {
-        return handleControllerError(error, res, 'Attach Snapshot To Tracking');
-    }
-};

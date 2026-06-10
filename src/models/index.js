@@ -20,8 +20,4 @@ RawGnss.belongsTo(Tracking, { foreignKey: 'trackingId', as: 'tracking' });
 Device.hasMany(TrackingSnapshot, { foreignKey: 'deviceId', as: 'snapshots', onDelete: 'CASCADE' });
 TrackingSnapshot.belongsTo(Device, { foreignKey: 'deviceId', as: 'device' });
 
-// Tracking - TrackingSnapshot : 1 - N
-Tracking.hasMany(TrackingSnapshot, { foreignKey: 'trackingId', as: 'snapshots', onDelete: 'SET NULL' });
-TrackingSnapshot.belongsTo(Tracking, { foreignKey: 'trackingId', as: 'tracking' });
-
 export { User, Device, Tracking, RawGnss, TrackingSnapshot };

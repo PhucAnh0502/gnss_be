@@ -2,7 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import { Op } from 'sequelize';
 import { supabase } from '../configs/supabaseClient.js';
-import { Device, Tracking, TrackingSnapshot } from '../models/index.js';
+import { Device, TrackingSnapshot } from '../models/index.js';
 
 export class ServiceError extends Error {
     constructor(message, statusCode) {
@@ -63,7 +63,6 @@ const mapSnapshot = async (snapshot) => {
     return {
         id: snapshot.id,
         deviceId: snapshot.deviceId,
-        trackingId: snapshot.trackingId,
         capturedAt: snapshot.capturedAt,
         captureMode: snapshot.captureMode,
         latitude,
@@ -113,7 +112,6 @@ export const createSnapshotRecord = async (payload, userId) => {
 
     const snapshot = await TrackingSnapshot.create({
         deviceId: device.id,
-        trackingId: payload.trackingId || null,
         capturedAt: payload.capturedAt ? new Date(payload.capturedAt) : new Date(),
         captureMode: payload.captureMode === 'auto' ? 'auto' : 'manual',
         location,
@@ -201,24 +199,6 @@ export const listSnapshotsByDevice = async (deviceId, userId, from, to, syncStat
     }
 
     return mapped;
-};
-
-export const attachSnapshotToTracking = async (snapshotId, trackingId, userId) => {
-    const snapshot = await TrackingSnapshot.findByPk(snapshotId);
-    if (!snapshot) {
-        throw new ServiceError('Snapshot not found', 404);
-    }
-
-    await findDeviceForUser(snapshot.deviceId, userId);
-
-    const tracking = await Tracking.findOne({ where: { id: trackingId, deviceId: snapshot.deviceId } });
-    if (!tracking) {
-        throw new ServiceError('Tracking point not found for this device', 404);
-    }
-
-    await snapshot.update({ trackingId: tracking.id, syncStatus: 'synced' });
-    const refreshed = await TrackingSnapshot.findByPk(snapshot.id);
-    return await mapSnapshot(refreshed);
 };
 
 export const createMultipartBuffer = (filePath) => {

@@ -16,15 +16,6 @@ const TrackingSnapshot = sequelize.define('TrackingSnapshot', {
             key: 'id',
         },
     },
-    trackingId: {
-        type: DataTypes.UUID,
-        allowNull: true,
-        field: 'trackingId',
-        references: {
-            model: 'Trackings',
-            key: 'id',
-        },
-    },
     capturedAt: {
         type: DataTypes.DATE,
         allowNull: false,
