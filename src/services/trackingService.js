@@ -11,28 +11,6 @@ export class ServiceError extends Error {
     }
 }
 
-export const saveLocationData = async (deviceCode, payload) => {
-    const device = await Device.findOne({ where: { deviceCode: deviceCode } });
-    if (!device) {
-        throw new ServiceError("Device not found", 404);
-    }
-
-    const newPoint = await Tracking.create({
-        location: { type: 'Point', coordinates: [payload.lng, payload.lat] },
-        altitude: payload.alt || 0,
-        speed: payload.sp || 0,
-        heading: payload.hd || 0,
-        hdop: payload.hdop || 0,
-        satellites: payload.sat || 0,
-        rssi: payload.rssi || 0,
-        timestamp: payload.ts ? new Date(payload.ts * 1000) : new Date(),
-        deviceId: device.id
-    })
-
-    await device.update({ lastPing: new Date(), status: 'active' });
-    return newPoint;
-}
-
 export const getHistoryWithDistance = async (deviceId, userId, isAdmin, from, to) => {
     const deviceWhere = isAdmin ? { id: deviceId } : { id: deviceId, userId };
     const device = await Device.findOne({ where: deviceWhere });

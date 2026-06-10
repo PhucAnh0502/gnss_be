@@ -1,6 +1,4 @@
 import mqtt from 'mqtt';
-import * as deviceService from '../services/deviceService.js';
-import * as trackingService from '../services/trackingService.js';
 import * as telemetryService from '../services/telemetryService.js';
 
 let mqttClient = null;
@@ -28,11 +26,6 @@ const extractDeviceCodeFromTopic = (topic) => {
 const handleIncomingMessage = async (topic, payloadBuffer) => {
 	const payload = parseMessage(payloadBuffer);
 	let deviceCode = extractDeviceCodeFromTopic(topic);
-
-	// If topic uses /me/ placeholder or no deviceCode in topic, try payload
-	if (!deviceCode && payload && typeof payload === 'object') {
-		deviceCode = payload.deviceCode || payload.device_code;
-	}
 
 	console.log(`[MQTT] Received message - Topic: ${topic}, DeviceCode: ${deviceCode || 'NONE'}`);
 
@@ -126,22 +119,6 @@ export const connectMqttClient = (io = null) => {
 	});
 
 	return mqttClient;
-};
-
-export const getMqttClient = () => mqttClient;
-
-export const publishMqttMessage = (topic, payload, options = { qos: 1, retain: false }) => {
-	if (!mqttClient || !mqttClient.connected) {
-		throw new Error('MQTT client is not connected');
-	}
-
-	const message = typeof payload === 'string' ? payload : JSON.stringify(payload);
-
-	mqttClient.publish(topic, message, options, (error) => {
-		if (error) {
-			console.error('[MQTT] Publish failed:', error.message);
-		}
-	});
 };
 
 export const disconnectMqttClient = () => {

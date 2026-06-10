@@ -1,5 +1,3 @@
-import fs from 'fs';
-import path from 'path';
 import { Op } from 'sequelize';
 import { supabase } from '../configs/supabaseClient.js';
 import { Device, TrackingSnapshot } from '../models/index.js';
@@ -199,8 +197,4 @@ export const listSnapshotsByDevice = async (deviceId, userId, from, to, syncStat
     }
 
     return mapped;
-};
-
-export const createMultipartBuffer = (filePath) => {
-    return fs.readFileSync(path.resolve(filePath));
 };

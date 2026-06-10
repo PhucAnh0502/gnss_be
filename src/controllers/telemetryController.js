@@ -3,11 +3,9 @@ import * as telemetryService from '../services/telemetryService.js';
 const handleControllerError = (error, res, context) => {
     console.error(`${context} error:`, error);
 
-    if (error instanceof ServiceError) {
-        return res.status(error.statusCode).json({ message: error.message });
-    }
-
-    return res.status(500).json({ message: "Internal server error" });
+    const statusCode = error.statusCode || 500;
+    const message = error.message || "Internal server error";
+    return res.status(statusCode).json({ message });
 };
 
 export const getRawData = async (req, res) => {
@@ -27,13 +25,5 @@ export const ingestData = async (req, res) => {
         return res.status(201).json(result);
     } catch (error) {
         return handleControllerError(error, res, "Ingest Telemetry Data");
-    }
-}
-
-export const handleMqttData = async (mqttData) => {
-    try {
-        await telemetryService.processTelemetry(mqttData);
-    } catch (error) {
-        console.error("[MQTT Controller Error]:", error.message);
     }
 }

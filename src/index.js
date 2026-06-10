@@ -10,7 +10,6 @@ import deviceRoutes from './routes/deviceRoutes.js';
 import trackingRoutes from './routes/trackingRoutes.js';
 import snapshotRoutes from './routes/snapshotRoutes.js';
 import telemetryRoutes from './routes/telemetryRoutes.js';
-import { connect } from 'http2';
 
 dotenv.config();
 const app = express();

@@ -11,21 +11,6 @@ class ServiceError extends Error {
 
 const identityCache = new Map();
 
-
-//Sync deviceCode - deviceId cache for faster lookup during telemetry processing
-export const syncIdentityCache = async () => {
-    try {
-        const devices = await Device.findAll({
-            attributes: ['id', 'deviceCode']
-        })
-        identityCache.clear();
-        devices.forEach(d => identityCache.set(d.deviceCode, d.id));
-        return {success: true, count: identityCache.size};
-    } catch (error) {
-        throw error;
-    }
-}
-
 export const processTelemetry = async (payload) => {
     const {deviceCode, tracking, raw} = payload;
     const fallbackTrackingTimestamp = tracking?.ts ? new Date(tracking.ts * 1000) : new Date();
