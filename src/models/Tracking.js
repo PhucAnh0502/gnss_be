@@ -39,6 +39,10 @@ const Tracking = sequelize.define('Tracking', {
         type: DataTypes.FLOAT,
         defaultValue: 0
     },
+    segmentFlag: {
+        type: DataTypes.ENUM('start', 'none', 'end'),
+        defaultValue: 'none'
+    },
     timestamp: {
         type: DataTypes.DATE,
         defaultValue: DataTypes.NOW

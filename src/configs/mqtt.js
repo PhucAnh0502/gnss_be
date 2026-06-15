@@ -1,5 +1,6 @@
 import mqtt from 'mqtt';
 import * as telemetryService from '../services/telemetryService.js';
+import * as alertService from '../services/alertService.js';
 
 let mqttClient = null;
 let socketIo = null;
@@ -44,6 +45,16 @@ const handleIncomingMessage = async (topic, payloadBuffer) => {
 					trackingId: result.trackingId,
 					...result.live,
 				});
+            }
+
+            // Evaluate position against alert zones
+            try {
+                const alertLat = payload.lat;
+                const alertLng = payload.lng;
+                console.log(`[MQTT] Alert eval for ${deviceCode}: lat=${alertLat}, lng=${alertLng}`);
+                await alertService.evaluatePosition(deviceCode, alertLat, alertLng);
+            } catch (alertError) {
+                console.error(`[MQTT] AlertService error for ${deviceCode}:`, alertError.message);
             }
             
             console.log(`[MQTT] Saved telemetry for device: ${deviceCode}`);

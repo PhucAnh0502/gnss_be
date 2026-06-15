@@ -44,6 +44,7 @@ export const processTelemetry = async (payload) => {
                 satellites_count: tracking.satCount ?? tracking.sat ?? 0,
                 satellites_used: tracking.satUsed ?? 0,
                 avg_cn0: tracking.avgCn0 ?? 0,
+                segmentFlag: tracking.segmentFlag || 'none',
                 timestamp: trackingTimestamp
             }, { transaction: t });
 
@@ -84,6 +85,7 @@ export const processTelemetry = async (payload) => {
                                 sat: tracking.satCount ?? tracking.sat ?? 0,
                                 satUsed: tracking.satUsed ?? 0,
                                 avgCn0: tracking.avgCn0 ?? 0,
+                                segmentFlag: tracking.segmentFlag || 'none',
                                 raw: raw && typeof raw === 'object'
                                     ? {
                                             status: raw.status || [],

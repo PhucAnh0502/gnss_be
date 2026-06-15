@@ -61,7 +61,7 @@ export const loginUser = async ({ email, password }) => {
         throw new ServiceError("Invalid email or password", 400);
     }
 
-    const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, { expiresIn: "1d" });
+    const token = jwt.sign({ id: user.id, role: user.role }, process.env.JWT_SECRET, { expiresIn: "1d" });
 
     return {
         message: "Login successful",

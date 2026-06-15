@@ -5,6 +5,7 @@ import {Server} from 'socket.io';
 import {createServer} from 'http';
 import sequelize, {connectDB} from './configs/db.js';
 import { connectMqttClient } from './configs/mqtt.js';
+import * as alertService from './services/alertService.js';
 import authRoutes from './routes/authRoutes.js';
 import deviceRoutes from './routes/deviceRoutes.js';
 import trackingRoutes from './routes/trackingRoutes.js';
@@ -54,6 +55,7 @@ io.on('connect_error', (error) => {
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.set('io', io);
 
 // DB initialization state
 let isDbInitialized = false;
@@ -94,12 +96,19 @@ if (process.env.VERCEL) {
     });
 }
 
+import deviceConfigRoutes from './routes/deviceConfigRoutes.js';
+import alertZoneRoutes from './routes/alertZoneRoutes.js';
+import alertHistoryRoutes from './routes/alertHistoryRoutes.js';
+
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/devices', deviceRoutes);
+app.use('/api/devices', deviceConfigRoutes);
 app.use('/api/tracking', trackingRoutes);
 app.use('/api/snapshots', snapshotRoutes);
 app.use('/api/telemetry', telemetryRoutes);
+app.use('/api/alert-zones', alertZoneRoutes);
+app.use('/api/alert-events', alertHistoryRoutes);
 
 app.get('/', (req, res) => {
     res.status(200).json({ message: 'GNSS backend is running.' });
@@ -120,6 +129,9 @@ const startServer = async () => {
             console.log('[Database] Synchronized successfully.');
 
             connectMqttClient(io); 
+
+            alertService.init(io);
+            await alertService.loadZones();
 
             httpServer.listen(PORT, () => {
                 console.log(`[Server] GNSS System running on port: ${PORT}`);

@@ -3,6 +3,9 @@ import Device from './Device.js';
 import Tracking from './Tracking.js';
 import RawGnss from './RawGnss.js';
 import TrackingSnapshot from './TrackingSnapshot.js';
+import DeviceConfig from './DeviceConfig.js';
+import AlertZone from './AlertZone.js';
+import AlertEvent from './AlertEvent.js';
 
 // User - Device : 1 - N
 User.hasMany(Device, { foreignKey: 'userId', as: 'devices', onDelete: 'CASCADE' });
@@ -20,4 +23,8 @@ RawGnss.belongsTo(Tracking, { foreignKey: 'trackingId', as: 'tracking' });
 Device.hasMany(TrackingSnapshot, { foreignKey: 'deviceId', as: 'snapshots', onDelete: 'CASCADE' });
 TrackingSnapshot.belongsTo(Device, { foreignKey: 'deviceId', as: 'device' });
 
-export { User, Device, Tracking, RawGnss, TrackingSnapshot };
+// Device - DeviceConfig : 1 - 1
+Device.hasOne(DeviceConfig, { foreignKey: 'deviceId', as: 'config', onDelete: 'CASCADE' });
+DeviceConfig.belongsTo(Device, { foreignKey: 'deviceId', as: 'device' });
+
+export { User, Device, Tracking, RawGnss, TrackingSnapshot, DeviceConfig, AlertZone, AlertEvent };
