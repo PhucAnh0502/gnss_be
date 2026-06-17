@@ -47,14 +47,13 @@ const handleIncomingMessage = async (topic, payloadBuffer) => {
 				});
             }
 
-            // Evaluate position against alert zones
-            try {
-                const alertLat = payload.lat;
-                const alertLng = payload.lng;
-                console.log(`[MQTT] Alert eval for ${deviceCode}: lat=${alertLat}, lng=${alertLng}`);
-                await alertService.evaluatePosition(deviceCode, alertLat, alertLng);
-            } catch (alertError) {
-                console.error(`[MQTT] AlertService error for ${deviceCode}:`, alertError.message);
+            // Evaluate position against alert zones (fire-and-forget, don't block telemetry)
+            const alertLat = payload.lat;
+            const alertLng = payload.lng;
+            if (alertLat != null && alertLng != null) {
+                alertService.evaluatePosition(deviceCode, alertLat, alertLng).catch((alertError) => {
+                    console.error(`[MQTT] AlertService error for ${deviceCode}:`, alertError.message);
+                });
             }
             
             console.log(`[MQTT] Saved telemetry for device: ${deviceCode}`);
