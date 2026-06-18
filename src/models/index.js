@@ -27,4 +27,8 @@ TrackingSnapshot.belongsTo(Device, { foreignKey: 'deviceId', as: 'device' });
 Device.hasOne(DeviceConfig, { foreignKey: 'deviceId', as: 'config', onDelete: 'CASCADE' });
 DeviceConfig.belongsTo(Device, { foreignKey: 'deviceId', as: 'device' });
 
+// AlertZone - AlertEvent : 1 - N
+AlertZone.hasMany(AlertEvent, { foreignKey: 'zoneId', as: 'events', onDelete: 'CASCADE' });
+AlertEvent.belongsTo(AlertZone, { foreignKey: 'zoneId', as: 'zone' });
+
 export { User, Device, Tracking, RawGnss, TrackingSnapshot, DeviceConfig, AlertZone, AlertEvent };
