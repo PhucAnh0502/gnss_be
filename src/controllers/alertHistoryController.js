@@ -9,7 +9,6 @@ export const getAlertHistory = async (req, res) => {
         const limitNum = Math.min(parseInt(limit) || 20, 100);
         const offset = (pageNum - 1) * limitNum;
 
-        // Build where clause
         const where = {};
         if (deviceCode) where.deviceCode = deviceCode;
         if (zoneId) where.zoneId = zoneId;
@@ -17,7 +16,11 @@ export const getAlertHistory = async (req, res) => {
         if (startDate || endDate) {
             where.timestamp = {};
             if (startDate) where.timestamp[Op.gte] = new Date(startDate);
-            if (endDate) where.timestamp[Op.lte] = new Date(endDate);
+            if (endDate) {
+                const endOfDay = new Date(endDate);
+                endOfDay.setHours(23, 59, 59, 999);
+                where.timestamp[Op.lte] = endOfDay;
+            }
         }
 
         // Validate max 90 days range
