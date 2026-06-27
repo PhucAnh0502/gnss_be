@@ -84,7 +84,7 @@ const TrackingSnapshot = sequelize.define('TrackingSnapshot', {
         allowNull: true,
     },
     syncStatus: {
-        type: DataTypes.ENUM('pending', 'uploaded', 'synced', 'failed'),
+        type: DataTypes.ENUM('pending', 'uploaded', 'failed'),
         allowNull: false,
         defaultValue: 'pending',
         field: 'syncStatus',
